@@ -7,7 +7,6 @@ import (
 	"strconv"
 )
 
-// Env chứa các thông tin cấu hình môi trường
 type Env struct {
 	PostgresHost     string
 	PostgresPort     string
@@ -21,7 +20,6 @@ type Env struct {
 	WebSocketHost    string
 }
 
-// LoadConfig tải cấu hình từ biến môi trường
 func LoadConfig() (*Env, error) {
 	env := &Env{
 		PostgresHost:     getEnv("POSTGRES_HOST", "localhost"),
@@ -39,7 +37,6 @@ func LoadConfig() (*Env, error) {
 	return env, nil
 }
 
-// getEnv lấy giá trị từ biến môi trường hoặc trả về giá trị mặc định
 func getEnv(key, defaultValue string) string {
 	val, exists := os.LookupEnv(key)
 	if !exists {
@@ -48,7 +45,6 @@ func getEnv(key, defaultValue string) string {
 	return val
 }
 
-// getEnvInt lấy giá trị int từ biến môi trường
 func getEnvInt(key string, defaultValue int) int {
 	val, exists := os.LookupEnv(key)
 	if !exists {
@@ -64,7 +60,6 @@ func getEnvInt(key string, defaultValue int) int {
 	return parsedValue
 }
 
-// PrintConfig in ra cấu hình đã tải lên
 func PrintConfig(env *Env) {
 	fmt.Println("Postgres Host:", env.PostgresHost)
 	fmt.Println("Postgres Port:", env.PostgresPort)
