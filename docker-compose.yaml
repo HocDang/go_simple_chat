@@ -24,7 +24,7 @@ services:
       POSTGRES_PASSWORD: $POSTGRES_PASS
       POSTGRES_DB: $POSTGRES_NAME
     ports:
-      - $POSTGRES_PORT:5432
+      - 33003:5432
     volumes:
       - go_backend_postgres:/var/lib/postgresql/data
     networks:
@@ -36,13 +36,13 @@ services:
     container_name: go_backend_redis
     restart: always
     ports:
-      - $REDIS_PORT:6379
+      - 33004:6379
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - go_backend_volume:/data
     networks:
       go_backend_network:
-        ipv4_address: $REDIS_HOST
+        ipv4_address: 10.0.2.4
 
 networks:
   go_backend_network:

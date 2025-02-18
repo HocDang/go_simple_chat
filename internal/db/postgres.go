@@ -1,23 +1,37 @@
 package db
 
 import (
+	"chat-server/config"
 	"log"
 
 	"github.com/go-pg/pg/v10"
 )
 
-var DB *pg.DB
+func InitPostgres(env *config.Env) *pg.DB {
+	dbHost := env.PostgresHost
+	dbPort := env.PostgresPort
+	dbName := env.PostgresName
+	dbUser := env.PostgresUser
+	dbPass := env.PostgresPass
 
-func InitPostgres() {
-	DB = pg.Connect(&pg.Options{
-		Addr:     "localhost:5432",
-		User:     "user",
-		Password: "password",
-		Database: "dbname",
+	db := pg.Connect(&pg.Options{
+		Addr:     dbHost + ":" + dbPort,
+		User:     dbUser,
+		Password: dbPass,
+		Database: dbName,
 	})
 
-	if _, err := DB.Exec("SELECT 1"); err != nil {
-		log.Fatal("❌ PostgreSQL connection failed:", err)
+	// Check connection
+	_, err := db.Exec("SELECT 1")
+	if err != nil {
+		log.Println("❌ Postgres connection failed:", err)
+		panic(err)
 	}
-	log.Println("✅ Connected to PostgreSQL")
+
+	log.Println("✅ Connected to Postgres")
+	return db
+}
+
+func Close(db *pg.DB) {
+	db.Close()
 }

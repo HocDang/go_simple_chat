@@ -1,71 +1,49 @@
 package config
 
 import (
-	"fmt"
 	"log"
 	"os"
-	"strconv"
+
+	"github.com/spf13/viper"
 )
 
 type Env struct {
-	PostgresHost     string
-	PostgresPort     string
-	PostgresUser     string
-	PostgresPass     string
-	PostgresName     string
-	ElasticsearchURL string
-	RedisAddr        string
-	RedisPassword    string
-	RedisDB          int
-	WebSocketHost    string
+	AppEnv                 string `mapstructure:"APP_ENV"`
+	ServerAddress          string `mapstructure:"SERVER_ADDRESS"`
+	ContextTimeout         int    `mapstructure:"CONTEXT_TIMEOUT"`
+	PostgresHost           string `mapstructure:"POSTGRES_HOST"`
+	PostgresPort           string `mapstructure:"POSTGRES_PORT"`
+	PostgresUser           string `mapstructure:"POSTGRES_USER"`
+	PostgresPass           string `mapstructure:"POSTGRES_PASS"`
+	PostgresName           string `mapstructure:"POSTGRES_NAME"`
+	RedisHost              string `mapstructure:"REDIS_HOST"`
+	RedisPort              string `mapstructure:"REDIS_PORT"`
+	RedisPass              string `mapstructure:"REDIS_PASS"`
+	RedisName              int    `mapstructure:"REDIS_NAME"`
+	AccessTokenExpiryHour  int    `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
+	RefreshTokenExpiryHour int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
+	AccessTokenSecret      string `mapstructure:"ACCESS_TOKEN_SECRET"`
+	RefreshTokenSecret     string `mapstructure:"REFRESH_TOKEN_SECRET"`
 }
 
-func LoadConfig() (*Env, error) {
-	env := &Env{
-		PostgresHost:     getEnv("POSTGRES_HOST", "localhost"),
-		PostgresPort:     getEnv("POSTGRES_PORT", "5432"),
-		PostgresUser:     getEnv("POSTGRES_USER", "user"),
-		PostgresPass:     getEnv("POSTGRES_PASS", "password"),
-		PostgresName:     getEnv("POSTGRES_NAME", "database"),
-		ElasticsearchURL: getEnv("ELASTICSEARCH_URL", "http://localhost:9200"),
-		RedisAddr:        getEnv("REDIS_ADDR", "localhost:6379"),
-		RedisPassword:    getEnv("REDIS_PASSWORD", ""),
-		RedisDB:          getEnvInt("REDIS_DB", 0),
-		WebSocketHost:    getEnv("WEBSOCKET_HOST", "localhost:8080"),
-	}
+func LoadConfig() *Env {
+	env := Env{}
+	viper.SetConfigFile("./.env")
 
-	return env, nil
-}
-
-func getEnv(key, defaultValue string) string {
-	val, exists := os.LookupEnv(key)
-	if !exists {
-		val = defaultValue
-	}
-	return val
-}
-
-func getEnvInt(key string, defaultValue int) int {
-	val, exists := os.LookupEnv(key)
-	if !exists {
-		return defaultValue
-	}
-
-	// Convert string to int
-	parsedValue, err := strconv.Atoi(val)
+	err := viper.ReadInConfig()
 	if err != nil {
-		log.Printf("Error parsing %s as int: %v. Using default value %d.", key, err, defaultValue)
-		return defaultValue
+		currentDir, err := os.Getwd()
+		log.Fatalf("Can't find the file .env in %s : %v", currentDir, err)
 	}
-	return parsedValue
-}
 
-func PrintConfig(env *Env) {
-	fmt.Println("Postgres Host:", env.PostgresHost)
-	fmt.Println("Postgres Port:", env.PostgresPort)
-	fmt.Println("Postgres User:", env.PostgresUser)
-	fmt.Println("Postgres Name:", env.PostgresName)
-	fmt.Println("Elasticsearch URL:", env.ElasticsearchURL)
-	fmt.Println("Redis Addr:", env.RedisAddr)
-	fmt.Println("WebSocket Host:", env.WebSocketHost)
+	err = viper.Unmarshal(&env)
+	if err != nil {
+		log.Fatal("Environment can't be loaded: ", err)
+	}
+
+	if env.AppEnv == "development" {
+		log.Println("The App is running in development env")
+	}
+
+	return &env
 }
