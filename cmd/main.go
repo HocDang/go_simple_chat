@@ -1,29 +1,20 @@
 package main
 
 import (
-	"time"
-
-	route "w3s/go-backend/api/route"
-
-	"w3s/go-backend/bootstrap"
-
-	"github.com/gin-gonic/gin"
+	"chat-server/config"
+	"chat-server/internal/app"
+	"log"
 )
 
 func main() {
 
-	app := bootstrap.App()
+	// Load config from .env file
+	env, err := config.LoadConfig()
+	if err != nil {
+		log.Fatal("Error loading config:", err)
+	}
 
-	env := app.Env
+	config.PrintConfig(env)
 
-	db := app.Mongo.Database(env.DBName)
-	defer app.CloseDBConnection()
-
-	timeout := time.Duration(env.ContextTimeout) * time.Second
-
-	gin := gin.Default()
-
-	route.Setup(env, timeout, db, gin)
-
-	gin.Run(env.ServerAddress)
+	app.StartServer(env)
 }
