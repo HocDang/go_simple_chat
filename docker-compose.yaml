@@ -1,0 +1,74 @@
+version: "3.8"
+
+services:
+  go_backend_api:
+    build:
+      context: .
+      dockerfile: .docker/dev/Dockerfile
+    image: go_backend_api
+    container_name: go_backend_api
+    ports:
+      - 33002:33002
+    volumes:
+      - ./:/app
+    networks:
+      go_backend_network:
+        ipv4_address: 10.0.2.2
+
+  go_backend_mongodb:
+    image: mongo:6.0
+    container_name: go_backend_mongodb
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$DB_USER
+      - MONGO_INITDB_ROOT_PASSWORD=$DB_PASS
+    ports:
+      - 39003:27017
+    volumes:
+      - go_backend_volume:/data/db
+    networks:
+      go_backend_network:
+        ipv4_address: 10.0.2.3
+    
+  go_backend_postgres:
+    image: postgres:15
+    container_name: go_backend_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: $DB_USER
+      POSTGRES_PASSWORD: $DB_PASS
+      POSTGRES_DB: $DB_NAME
+    ports:
+      - "39004:5432"
+    volumes:
+      - go_backend_volume:/var/lib/postgresql/data
+    networks:
+      go_backend_network:
+        ipv4_address: 10.0.2.4
+
+  go_backend_redis:
+    image: redis:7
+    container_name: go_backend_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - go_backend_volume:/data
+    networks:
+      go_backend_network:
+        ipv4_address: 10.0.2.5
+
+networks:
+  go_backend_network:
+    name: go_backend_network
+    driver: bridge
+    ipam:
+     config:
+        - subnet: 10.0.2.0/24
+          gateway: 10.0.2.1
+
+volumes:
+  go_backend_volume:
+    name: go_backend_volume
