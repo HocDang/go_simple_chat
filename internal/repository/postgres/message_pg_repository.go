@@ -21,9 +21,12 @@ func (r *messagePgRepository) Create(message *entities.Message) error {
 	return err
 }
 
-func (r *messagePgRepository) GetByReceiverID(receiverID uuid.UUID) ([]entities.Message, error) {
+func (r *messagePgRepository) GetByReceiverID(receiverID uuid.UUID, senderID uuid.UUID) ([]entities.Message, error) {
 	var messages []entities.Message
-	err := r.db.Model(&messages).Where("receiver_id = ?", receiverID).Select()
+	err := r.db.Model(&messages).
+		Where("receiver_id = ?", receiverID).
+		Where("sender_id = ?", senderID).
+		Select()
 	if err != nil {
 		return nil, err
 	}

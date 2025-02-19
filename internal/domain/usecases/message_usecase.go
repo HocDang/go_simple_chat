@@ -8,5 +8,5 @@ import (
 
 type MessageUseCase interface {
 	SendMessage(senderID uuid.UUID, receiverID uuid.UUID, content string) error
-	GetMessages(receiverID uuid.UUID) ([]entities.Message, error)
+	GetMessages(receiverID uuid.UUID, senderID uuid.UUID) ([]entities.Message, error)
 }

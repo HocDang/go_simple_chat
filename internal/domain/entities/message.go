@@ -10,13 +10,13 @@ import (
 
 type Message struct {
 	ID         uuid.UUID `json:"id" pg:",pk,type:uuid,default:gen_random_uuid()"`
-	SenderID   uuid.UUID `json:"sender_id" pg:",notnull"`
-	ReceiverID uuid.UUID `json:"receiver_id" pg:",notnull"`
+	SenderID   uuid.UUID `json:"-" pg:",type:uuid,notnull"`
+	ReceiverID uuid.UUID `json:"-" pg:",type:uuid,notnull"`
 	Content    string    `json:"content" pg:",notnull"`
 	BaseModel
 
-	Sender   *User `pg:"rel:has-one, fk:sender_id"`
-	Receiver *User `pg:"rel:has-one, fk:receiver_id"`
+	Sender   *User `json:"-" pg:"rel:has-one, fk:sender_id"`
+	Receiver *User `json:"-" pg:"rel:has-one, fk:receiver_id"`
 }
 
 func (m *Message) BeforeInsert(ctx context.Context, db *pg.DB) error {

@@ -25,6 +25,6 @@ func (uc *MessageUseCase) SendMessage(senderID uuid.UUID, receiverID uuid.UUID, 
 	return uc.messageRepo.Create(message)
 }
 
-func (uc *MessageUseCase) GetMessages(receiverID uuid.UUID) ([]entities.Message, error) {
-	return uc.messageRepo.GetByReceiverID(receiverID)
+func (uc *MessageUseCase) GetMessages(receiverID uuid.UUID, senderID uuid.UUID) ([]entities.Message, error) {
+	return uc.messageRepo.GetByReceiverID(receiverID, senderID)
 }
