@@ -2,6 +2,7 @@ package http
 
 import (
 	"chat-server/internal/container"
+	"chat-server/internal/delivery/http/ws"
 	"chat-server/internal/delivery/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -33,4 +34,15 @@ func RegisterRoutes(r *gin.Engine, container *container.Container) {
 			messages.GET("/:id", chatHandler.GetMessages)
 		}
 	}
+
+	wsHub := ws.NewHub()
+	go wsHub.Run()
+	wsHandler := ws.NewWebSocketHandler(wsHub, container.MessageUseCase)
+
+	websocket := r.Group("/ws")
+	{
+		websocket.Use(middleware.JwtAuthMiddleware())
+		websocket.GET("/chat", wsHandler.WebSocketHandler)
+	}
+
 }
