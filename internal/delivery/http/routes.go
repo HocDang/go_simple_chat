@@ -19,15 +19,15 @@ func RegisterRoutes(r *gin.Engine, container *container.Container) {
 			auth.POST("/register", authHandler.Register)
 		}
 
-		users := api.Group("/users")
+		user := api.Group("/user")
 		{
-			users.GET("/", userHandler.GetUsers)
+			user.GET("/", userHandler.GetUsers)
 		}
 
-		chat := api.Group("/chat")
+		chat := api.Group("/messages")
 		{
-			chat.POST("/send", chatHandler.SendMessage)
-			chat.GET("/messages", chatHandler.GetMessages)
+			chat.POST("/", chatHandler.SendMessage)
+			chat.GET("/", chatHandler.GetMessages)
 		}
 	}
 }
