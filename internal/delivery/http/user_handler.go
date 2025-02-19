@@ -17,7 +17,7 @@ func NewUserHandler(userUseCase usecases.UserUseCase) *UserHandler {
 
 func (h *UserHandler) GetUsers(c *gin.Context) {
 
-	users, err := h.userUseCase.GetUsers()
+	users, err := h.userUseCase.GetAllUsers()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get users"})
 		return

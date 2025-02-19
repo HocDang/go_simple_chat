@@ -2,7 +2,7 @@ package usecases
 
 import "chat-server/internal/domain/entities"
 
-type UserUseCase interface {
-	GetUsers() ([]entities.User, error)
-	GetUserByID(id int) (*entities.User, error)
+type AuthUseCase interface {
+	Register(email string, password string) error
+	Login(email string, password string) (*entities.User, error)
 }

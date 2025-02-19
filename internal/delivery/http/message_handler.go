@@ -3,6 +3,7 @@ package http
 import (
 	"chat-server/internal/domain/usecases"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -39,7 +40,12 @@ func (h *MessageHandler) SendMessage(c *gin.Context) {
 
 // Lấy tin nhắn của người nhận
 func (h *MessageHandler) GetMessages(c *gin.Context) {
-	receiverID := c.Param("receiver_id")
+	receiverIDStr := c.Param("receiver_id")
+	receiverID, err := strconv.Atoi(receiverIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid receiver ID"})
+		return
+	}
 
 	messages, err := h.messageUseCase.GetMessages(receiverID)
 	if err != nil {
