@@ -10,8 +10,8 @@ import (
 
 type Message struct {
 	ID         uuid.UUID `json:"id" pg:",pk,type:uuid,default:gen_random_uuid()"`
-	SenderID   uuid.UUID `json:"-" pg:",type:uuid,notnull"`
-	ReceiverID uuid.UUID `json:"-" pg:",type:uuid,notnull"`
+	SenderID   uuid.UUID `json:"sender_id" pg:",type:uuid,notnull"`
+	ReceiverID uuid.UUID `json:"receiver_id" pg:",type:uuid,notnull"`
 	Content    string    `json:"content" pg:",notnull"`
 	BaseModel
 
