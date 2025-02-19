@@ -21,7 +21,8 @@ func (u *UserUseCase) GetAllUsers() ([]entities.User, error) {
 	var domainUsers []entities.User
 	for _, user := range users {
 		domainUsers = append(domainUsers, entities.User{
-			ID: user.ID,
+			ID:    user.ID,
+			Email: user.Email,
 		})
 	}
 	return domainUsers, nil

@@ -3,7 +3,6 @@ package postgres
 import (
 	"chat-server/internal/domain/entities"
 	"chat-server/internal/domain/repositories"
-	"errors"
 
 	"github.com/go-pg/pg/v10"
 )
@@ -34,7 +33,7 @@ func (r *userPgRepository) GetAll() ([]entities.User, error) {
 	var users []entities.User
 	err := r.db.Model(&users).Select()
 	if err != nil {
-		return nil, errors.New("failed to get users: " + err.Error())
+		return nil, err
 	}
 	return users, nil
 }

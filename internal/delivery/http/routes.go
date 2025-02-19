@@ -2,6 +2,7 @@ package http
 
 import (
 	"chat-server/internal/container"
+	"chat-server/internal/delivery/http/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,6 +22,7 @@ func RegisterRoutes(r *gin.Engine, container *container.Container) {
 
 		user := api.Group("/user")
 		{
+			user.Use(middleware.JwtAuthMiddleware())
 			user.GET("/", userHandler.GetUsers)
 		}
 

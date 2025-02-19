@@ -26,22 +26,26 @@ func GenerateToken(userID uuid.UUID) (string, error) {
 	return signedToken, nil
 }
 
-func ValidateToken(tokenString string) (int, error) {
+func ValidateToken(tokenString string) (uuid.UUID, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, jwt.ErrInvalidKey
 		}
 		return secretKey, nil
 	})
-	if err != nil || !token.Valid {
-		return 0, err
+	if err != nil {
+		log.Println("❌ Error parsing token: ", err)
+		return uuid.Nil, err
 	}
 
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok {
-		return 0, err
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		userID, err := uuid.Parse(claims["sub"].(string))
+		if err != nil {
+			log.Println("❌ Error parsing UUID: ", err)
+			return uuid.Nil, err
+		}
+		return userID, nil
 	}
 
-	userID := int(claims["sub"].(float64))
-	return userID, nil
+	return uuid.Nil, jwt.ErrSignatureInvalid
 }
