@@ -19,6 +19,7 @@ func StartServer(env *config.Env) {
 
 	// Init connect to database
 	database := db.InitPostgres(env)
+	db.Migrate(database)
 	defer db.Close(database)
 
 	// Init connect to Redis

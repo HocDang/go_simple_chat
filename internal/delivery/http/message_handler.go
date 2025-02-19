@@ -3,9 +3,9 @@ package http
 import (
 	"chat-server/internal/domain/usecases"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type MessageHandler struct {
@@ -19,9 +19,9 @@ func NewMessageHandler(messageUseCase usecases.MessageUseCase) *MessageHandler {
 // Gửi tin nhắn
 func (h *MessageHandler) SendMessage(c *gin.Context) {
 	var req struct {
-		SenderID   int    `json:"sender_id" binding:"required"`
-		ReceiverID int    `json:"receiver_id" binding:"required"`
-		Content    string `json:"content" binding:"required"`
+		SenderID   uuid.UUID `json:"sender_id" binding:"required"`
+		ReceiverID uuid.UUID `json:"receiver_id" binding:"required"`
+		Content    string    `json:"content" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -41,7 +41,7 @@ func (h *MessageHandler) SendMessage(c *gin.Context) {
 // Lấy tin nhắn của người nhận
 func (h *MessageHandler) GetMessages(c *gin.Context) {
 	receiverIDStr := c.Param("receiver_id")
-	receiverID, err := strconv.Atoi(receiverIDStr)
+	receiverID, err := uuid.Parse(receiverIDStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid receiver ID"})
 		return

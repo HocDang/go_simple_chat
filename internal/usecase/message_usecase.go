@@ -3,7 +3,8 @@ package usecase
 import (
 	"chat-server/internal/domain/entities"
 	"chat-server/internal/domain/repositories"
-	"time"
+
+	"github.com/google/uuid"
 )
 
 type MessageUseCase struct {
@@ -14,18 +15,16 @@ func NewMessageUseCase(messageRepo repositories.MessageRepository) *MessageUseCa
 	return &MessageUseCase{messageRepo: messageRepo}
 }
 
-func (uc *MessageUseCase) SendMessage(senderID, receiverID int, content string) error {
+func (uc *MessageUseCase) SendMessage(senderID uuid.UUID, receiverID uuid.UUID, content string) error {
 	message := &entities.Message{
 		SenderID:   senderID,
 		ReceiverID: receiverID,
 		Content:    content,
-		CreatedAt:  time.Now(),
-		UpdatedAt:  time.Now(),
 	}
 
 	return uc.messageRepo.Create(message)
 }
 
-func (uc *MessageUseCase) GetMessages(receiverID int) ([]entities.Message, error) {
+func (uc *MessageUseCase) GetMessages(receiverID uuid.UUID) ([]entities.Message, error) {
 	return uc.messageRepo.GetByReceiverID(receiverID)
 }

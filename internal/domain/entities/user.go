@@ -1,11 +1,10 @@
 package entities
 
-import "time"
+import "github.com/google/uuid"
 
 type User struct {
-	ID        int       `json:"id"`
-	Email     string    `json:"email"`
-	Password  string    `json:"-"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID       uuid.UUID `json:"id" pg:",pk,type:uuid,default:gen_random_uuid()"`
+	Email    string    `json:"email" pg:",unique,notnull"`
+	Password string    `json:"-" pg:",notnull"`
+	BaseModel
 }

@@ -5,6 +5,7 @@ import (
 	"chat-server/internal/domain/repositories"
 
 	"github.com/go-pg/pg/v10"
+	"github.com/google/uuid"
 )
 
 type messagePgRepository struct {
@@ -20,7 +21,7 @@ func (r *messagePgRepository) Create(message *entities.Message) error {
 	return err
 }
 
-func (r *messagePgRepository) GetByReceiverID(receiverID int) ([]entities.Message, error) {
+func (r *messagePgRepository) GetByReceiverID(receiverID uuid.UUID) ([]entities.Message, error) {
 	var messages []entities.Message
 	err := r.db.Model(&messages).Where("receiver_id = ?", receiverID).Select()
 	if err != nil {

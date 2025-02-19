@@ -2,6 +2,7 @@ package db
 
 import (
 	"chat-server/config"
+	"chat-server/internal/db/migrations"
 	"log"
 
 	"github.com/go-pg/pg/v10"
@@ -34,4 +35,9 @@ func InitPostgres(env *config.Env) *pg.DB {
 
 func Close(db *pg.DB) {
 	db.Close()
+}
+
+func Migrate(db *pg.DB) {
+	migrations.MigrateTableMessages(db)
+	migrations.MigrateTableUser(db)
 }
