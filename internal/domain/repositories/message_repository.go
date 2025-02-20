@@ -7,6 +7,6 @@ import (
 )
 
 type MessageRepository interface {
-	Create(message *entities.Message) error
+	Create(message *entities.Message) (*entities.Message, error)
 	GetByReceiverID(receiverID uuid.UUID, senderID uuid.UUID) ([]entities.Message, error)
 }

@@ -1,20 +1,6 @@
 version: "3.8"
 
 services:
-  go_backend_api:
-    build:
-      context: .
-      dockerfile: .docker/dev/Dockerfile
-    image: go_backend_api
-    container_name: go_backend_api
-    ports:
-      - $API_PORT:$API_PORT
-    volumes:
-      - ./:/app
-    networks:
-      go_backend_network:
-        ipv4_address: $API_IP
-    
   go_backend_postgres:
     image: postgres:15
     container_name: go_backend_postgres
@@ -43,6 +29,47 @@ services:
     networks:
       go_backend_network:
         ipv4_address: 10.0.2.4
+
+  go_backend_elasticsearch:
+    container_name: go_backend_elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.0
+    environment:
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+    ports:
+      - 33005:9200
+    networks:
+      go_backend_network:
+        ipv4_address: 10.0.2.5
+
+  go_backend_kibana:
+    container_name: go_backend_kibana
+    image: docker.elastic.co/kibana/kibana:7.11.0
+    environment:
+      - ELASTICSEARCH_HOSTS=http://go_backend_elasticsearch:9200
+    depends_on:
+      - go_backend_elasticsearch
+    ports:
+      - 33006:5601
+    networks:
+      go_backend_network:
+        ipv4_address: 10.0.2.6
+
+  go_backend_api:
+    build:
+      context: .
+      dockerfile: .docker/dev/Dockerfile
+    image: go_backend_api
+    container_name: go_backend_api
+    depends_on:
+      - go_backend_elasticsearch
+    ports:
+      - $API_PORT:$API_PORT
+    volumes:
+      - ./:/app
+    networks:
+      go_backend_network:
+        ipv4_address: $API_IP
 
 networks:
   go_backend_network:

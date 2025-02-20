@@ -32,6 +32,7 @@ func RegisterRoutes(r *gin.Engine, container *container.Container) {
 			messages.Use(middleware.JwtAuthMiddleware())
 			messages.POST("/", chatHandler.SendMessage)
 			messages.GET("/:id", chatHandler.GetMessages)
+			messages.GET("/search/:id", chatHandler.SearchMessages)
 		}
 	}
 

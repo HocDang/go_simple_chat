@@ -16,9 +16,13 @@ func NewMessagePgRepository(db *pg.DB) repositories.MessageRepository {
 	return &messagePgRepository{db: db}
 }
 
-func (r *messagePgRepository) Create(message *entities.Message) error {
-	_, err := r.db.Model(message).Insert()
-	return err
+func (r *messagePgRepository) Create(message *entities.Message) (*entities.Message, error) {
+	_, err := r.db.Model(message).Returning("*").Insert()
+	if err != nil {
+		return nil, err
+	}
+
+	return message, nil
 }
 
 func (r *messagePgRepository) GetByReceiverID(receiverID uuid.UUID, senderID uuid.UUID) ([]entities.Message, error) {

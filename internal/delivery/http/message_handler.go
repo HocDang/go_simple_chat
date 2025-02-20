@@ -21,7 +21,6 @@ func (h *MessageHandler) SendMessage(c *gin.Context) {
 		ReceiverID uuid.UUID `json:"receiver_id" binding:"required"`
 		Content    string    `json:"content" binding:"required"`
 	}
-
 	senderID := c.MustGet("x-user-id").(uuid.UUID)
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -48,11 +47,31 @@ func (h *MessageHandler) GetMessages(c *gin.Context) {
 		return
 	}
 
-	messages, err := h.messageUseCase.GetMessages(receiverID, senderID)
+	messages, err := h.messageUseCase.GetMessage(receiverID, senderID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get messages"})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": messages})
+}
+
+func (h *MessageHandler) SearchMessages(c *gin.Context) {
+	receiverIDStr := c.Param("id")
+	receiverID, err := uuid.Parse(receiverIDStr)
+	senderID := c.MustGet("x-user-id").(uuid.UUID)
+	keyword := c.Query("keyword")
+
+	if keyword == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Keyword is required"})
+		return
+	}
+
+	results, err := h.messageUseCase.SearchMessage(receiverID, senderID, keyword)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to search messages"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": results})
 }
