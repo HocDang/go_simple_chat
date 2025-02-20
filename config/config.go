@@ -20,6 +20,8 @@ type Env struct {
 	RedisPort              string `mapstructure:"REDIS_PORT"`
 	RedisPass              string `mapstructure:"REDIS_PASS"`
 	RedisName              int    `mapstructure:"REDIS_NAME"`
+	EsHost                 string `mapstructure:"ELASTICSEARCH_HOST"`
+	EsPort                 string `mapstructure:"ELASTICSEARCH_PORT"`
 	AccessTokenExpiryHour  int    `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
 	RefreshTokenExpiryHour int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
 	AccessTokenSecret      string `mapstructure:"ACCESS_TOKEN_SECRET"`

@@ -8,5 +8,6 @@ import (
 
 type MessageUseCase interface {
 	SendMessage(senderID uuid.UUID, receiverID uuid.UUID, content string) error
-	GetMessages(receiverID uuid.UUID, senderID uuid.UUID) ([]entities.Message, error)
+	GetMessage(receiverID uuid.UUID, senderID uuid.UUID) ([]entities.Message, error)
+	SearchMessage(receiverID uuid.UUID, senderID uuid.UUID, query string) ([]entities.Message, error)
 }

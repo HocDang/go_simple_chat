@@ -2,6 +2,7 @@ package app
 
 import (
 	"chat-server/config"
+	"chat-server/internal/bootstrap"
 	"chat-server/internal/cache"
 	"chat-server/internal/container"
 	"chat-server/internal/db"
@@ -27,10 +28,10 @@ func StartServer(env *config.Env) {
 	defer redis.Close()
 
 	// Init Elasticsearch
-	db.InitElasticsearch()
+	es := bootstrap.InitElasticsearch(env.EsHost, env.EsPort)
 
 	// Init Container
-	container := container.NewContainer(database)
+	container := container.NewContainer(database, es)
 
 	// Register Routes
 	http.RegisterRoutes(router, container)
